@@ -1,25 +1,50 @@
 <template>
   <div class="container mt-5">
     <h1 class="text-center mb-4">Pokémon List</h1>
-    
-    <!-- Secció per l'equip de Pokémon -->
+
     <div class="team-container mb-4">
-      <div v-for="(pokemon, index) in team" :key="index" class="team-slot" @click="removeFromTeam(index)">
-        <img v-if="pokemon" :src="pokemon.sprites.front_default" class="team-img" alt="team pokemon" />
+      <div v-for="(pokemon, index) in team" :key="index" class="team-slot">
+        <img
+          v-if="pokemon"
+          :src="pokemon.sprites.front_default"
+          class="team-img"
+          alt="team pokemon"
+        />
       </div>
-      <!-- Afegir quadrats buits si l'equip no té 6 membres -->
-      <div v-for="index in 6 - team.length" :key="'empty-' + index" class="team-slot"></div>
+      <div
+        v-for="index in 6 - team.length"
+        :key="'empty-' + index"
+        class="team-slot"
+      ></div>
     </div>
 
     <div class="row">
-      <div class="col-md-3 mb-4" v-for="pokemon in pokemonList" :key="pokemon.id">
+      <div
+        class="col-md-3 mb-4"
+        v-for="pokemon in pokemonList"
+        :key="pokemon.id"
+      >
         <div class="card h-100 position-relative">
-          <img :src="pokemon.sprites.front_default" class="card-img-top" :alt="pokemon.name" />
+          <img
+            :src="pokemon.sprites.front_default"
+            class="card-img-top"
+            :alt="pokemon.name"
+          />
           <div class="plus-icon" @click="addToTeam(pokemon)">
-            <i :class="isFavorite(pokemon) ? 'fas fa-heart text-danger' : 'far fa-plus'"></i>
+            <i
+              :class="
+                isInTeam(pokemon) ? 'fas fa-plus text-primary' : 'far fa-plus'
+              "
+            ></i>
           </div>
           <div class="favorite-icon" @click="toggleFavorite(pokemon)">
-            <i :class="isFavorite(pokemon) ? 'fas fa-heart text-danger' : 'far fa-heart'"></i>
+            <i
+              :class="
+                isFavorite(pokemon)
+                  ? 'fas fa-heart text-danger'
+                  : 'far fa-heart'
+              "
+            ></i>
           </div>
           <div class="card-body text-center">
             <h5 class="card-title">{{ pokemon.name }}</h5>
@@ -27,7 +52,8 @@
             <p class="card-text">
               Type:
               <span v-for="(type, index) in pokemon.types" :key="index">
-                {{ type.type.name }}<span v-if="index < pokemon.types.length - 1">, </span>
+                {{ type.type.name
+                }}<span v-if="index < pokemon.types.length - 1">, </span>
               </span>
             </p>
           </div>
@@ -69,13 +95,26 @@ export default {
       return this.favorites.includes(pokemon.id);
     },
     addToTeam(pokemon) {
-      if (this.team.length < 6 && !this.team.includes(pokemon)) {
-        this.team.push(pokemon);
+      const index = this.team.indexOf(pokemon);
+      if (index !== -1) {
+        // Si el Pokémon ja està a l'equip, el traiem
+        this.removeFromTeam(index);
+      } else {
+        // Si el Pokémon no està a l'equip, l'afegim si hi ha espai
+        if (this.team.length < 6) {
+          this.team.push(pokemon);
+        } else {
+          // Aquí mostrem un missatge d'avís si l'equip està ple
+          alert("L'equip ja està ple. No pots afegir més Pokémon.");
+        }
       }
     },
     removeFromTeam(index) {
       this.team.splice(index, 1);
-    }
+    },
+    isInTeam(pokemon) {
+      return this.team.includes(pokemon);
+    },
   },
 };
 </script>
@@ -135,7 +174,6 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
 }
 
 .team-img {
